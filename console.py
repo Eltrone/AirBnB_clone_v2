@@ -116,19 +116,43 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, arg):
-        """Creates a new instance of BaseModel."""
-        if not arg:
-            print("** class name missing **")
-            return
-        if arg not in self.class_list:
-            print("** class doesn't exist **")
-            return
-        try:
-            instance = self.class_list[arg]()
-            instance.save()
-            print(instance.id)
-        except NameError:
-            print("** class doesn't exist **")
+    """Creates a new instance of BaseModel with parameters."""
+    if not arg:
+        print("** class name missing **")
+        return
+    args = arg.split(" ")
+    class_name = args[0]
+    if class_name not in self.class_list:
+        print("** class doesn't exist **")
+        return
+    
+    kwargs = {}
+    for param in args[1:]:
+        key_value = param.split("=")
+        if len(key_value) == 2:
+            key, value = key_value
+            # Process string values
+            if value[0] == '"' and value[-1] == '"':
+                value = value.strip('"').replace('_', ' ').replace('\"', '"')
+            # Process numeric values
+            elif "." in value:
+                try:
+                    value = float(value)
+                except ValueError:
+                    continue
+            else:
+                try:
+                    value = int(value)
+                except ValueError:
+                    continue
+            kwargs[key] = value
+    
+    try:
+        instance = self.class_list[class_name](**kwargs)
+        instance.save()
+        print(instance.id)
+    except Exception as e:
+        print(e)
 
     def help_create(self):
         """shows what create does
