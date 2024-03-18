@@ -3,10 +3,16 @@
 
 import uuid
 from datetime import datetime
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, String, DateTime
 
+Base = declarative_base()
 
 class BaseModel:
     """Defines all common attributes/methods for other classes."""
+    id = Column(String(60), primary_key=True, default=lambda: uuid.uuid4().hex)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, nullable=False, onupdate=datetime.utcnow)
 
     def __init__(self, *args, **kwargs):
         """Initializes a new instance of BaseModel."""
@@ -42,6 +48,10 @@ class BaseModel:
         self.updated_at = datetime.now()
         from models import storage
         storage.save()
+
+    def delete(self):
+        from models import storage
+        storage.delete(self)
 
     def to_dict(self):
         """Returns a dictionary containing all keys/values."""
