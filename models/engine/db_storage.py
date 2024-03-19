@@ -24,8 +24,22 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        # interroger la DB et récupérer tous les objets d'un type spécifique
-        pass
+        """Query current database session 
+        all objects depending on the class name (argument cls)."""
+        all_objs = {}
+        if cls is None:
+            classes = [State, City, User] # Ajoutez ou modifiez cette liste selon vos classes
+            for cls in classes:
+                objs = self.__session.query(cls).all()
+                for obj in objs:
+                    key = f"{obj.__class__.__name__}.{obj.id}"
+                    all_objs[key] = obj
+        else:
+            objs = self.__session.query(cls).all()
+            for obj in objs:
+                key = f"{cls.__name__}.{obj.id}"
+                all_objs[key] = obj
+        return all_objs
 
     def new(self, obj):
         self.__session.add(obj)

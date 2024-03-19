@@ -217,18 +217,13 @@ class HBNBCommand(cmd.Cmd):
 
     def do_all(self, arg):
         """Prints all string representation of all instances."""
-        all_objs = storage.all()
-        if arg:
-            if arg not in self.class_list:
-                print("** class doesn't exist **")
-                return
-            print([
-                str(obj)
-                for key, obj in all_objs.items()
-                if type(obj).__name__ == arg
-            ])
+        cls = self.class_list.get(arg, None) if arg else None
+        all_objs = storage.all(cls)
+        if all_objs:
+            for obj in all_objs.values():
+                print(obj)
         else:
-            print([str(obj) for obj in all_objs.values()])
+            print("** No instances found **")
 
     def help_all(self):
         """shows what all does
