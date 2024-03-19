@@ -6,7 +6,7 @@ from sqlalchemy import Column, String, Integer, Float, ForeignKey
 from sqlalchemy.orm import relationship
 
 
-class Place(BaseModel):
+class Place(BaseModel, Base):
     """ Place class that inherits from BaseModel """
     __tablename__ = 'places'
     city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
