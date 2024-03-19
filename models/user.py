@@ -2,7 +2,7 @@
 """user class"""
 
 from models.base_model import Base, BaseModel
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship
 
 
