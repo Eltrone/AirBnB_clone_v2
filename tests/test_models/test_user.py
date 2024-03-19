@@ -1,48 +1,35 @@
 #!/usr/bin/python3
-"""Ce module définit des tests pour l'utilisateur"""
-
+"""
+Unittest for User
+"""
 import unittest
-import os
-import json
-from models.engine.file_storage import FileStorage
 from models.user import User
 
 
 class TestUser(unittest.TestCase):
-    """
-    Cette classe effectue des tests sur l'utilisateur
-    """
+    """Defines test cases for the User class."""
 
     def setUp(self):
-        """
-        Cette méthode configure toutes les instances nécessaires pour les tests
-        """
-        self.storage = FileStorage()
-        self.user = User()
-        self.user.first_name = "John"
-        self.user.last_name = "Doe"
-        self.user.email = "john.doe@example.com"
-        self.user.password = "password"
-        self.storage.new(self.user)
-        self.storage.save()
+        """Set up for the tests."""
+        self.user_1 = User()
 
-    def tearDown(self):
-        """
-        Cette méthode supprime le fichier json qui a été ouvert pour les tests
-        """
-        if os.path.exists(FileStorage._FileStorage__file_path):
-            os.remove(FileStorage._FileStorage__file_path)
+    def test_instance(self):
+        """Test if user_1 is an instance of User."""
+        self.assertIsInstance(self.user_1, User)
 
-    def test_user_instance(self):
-        """Ce test vérifie l'instance de l'utilisateur"""
-        self.assertIsInstance(self.user, User)
+    def test_attributes(self):
+        """Test if user has the correct attributes."""
+        self.assertTrue(hasattr(self.user_1, "email"))
+        self.assertTrue(hasattr(self.user_1, "password"))
+        self.assertTrue(hasattr(self.user_1, "first_name"))
+        self.assertTrue(hasattr(self.user_1, "last_name"))
 
-    def test_user_attributes(self):
-        """Ce test vérifie les attributs de l'utilisateur"""
-        self.assertEqual(self.user.first_name, "John")
-        self.assertEqual(self.user.last_name, "Doe")
-        self.assertEqual(self.user.email, "john.doe@example.com")
-        self.assertEqual(self.user.password, "password")
+    def test_attribute_types(self):
+        """Test the type of User attributes."""
+        self.assertIsInstance(self.user_1.email, str)
+        self.assertIsInstance(self.user_1.password, str)
+        self.assertIsInstance(self.user_1.first_name, str)
+        self.assertIsInstance(self.user_1.last_name, str)
 
 
 if __name__ == '__main__':

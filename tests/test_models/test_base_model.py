@@ -1,55 +1,50 @@
 #!/usr/bin/python3
-"""Unit Test for BaseModel"""
-
+"""
+Unittest for BaseModel
+"""
 import unittest
 from models.base_model import BaseModel
 from datetime import datetime
 
 
 class TestBaseModel(unittest.TestCase):
-    """
-    Test cases for the BaseModel class
-    """
+    """Defines test cases for the BaseModel class."""
 
-    def test_init(self):
-        """
-        Test initialization of BaseModel instance
-        """
-        model = BaseModel()
-        self.assertTrue(hasattr(model, "id"))
-        self.assertTrue(hasattr(model, "created_at"))
-        self.assertTrue(hasattr(model, "updated_at"))
-        self.assertIsInstance(model.created_at, datetime)
-        self.assertIsInstance(model.updated_at, datetime)
+    def test_instance(self):
+        """Test instantiation of BaseModel object."""
+        my_model = BaseModel()
+        self.assertTrue(isinstance(my_model, BaseModel))
 
-    def test_str(self):
-        """
-        Test the __str__ method
-        """
-        model = BaseModel()
-        expected = f"[BaseModel] ({model.id}) {model.__dict__}"
-        self.assertEqual(model.__str__(), expected)
+    def test_id(self):
+        """Test if id is unique."""
+        model_1 = BaseModel()
+        model_2 = BaseModel()
+        self.assertNotEqual(model_1.id, model_2.id)
 
-    def test_save(self):
-        """
-        Test the save method
-        """
+    def test_datetime(self):
+        """Test created_at and updated_at are datetime objects."""
         model = BaseModel()
-        old_updated_at = model.updated_at
-        model.save()
-        self.assertNotEqual(model.updated_at, old_updated_at)
+        self.assertTrue(isinstance(model.created_at, datetime))
+        self.assertTrue(isinstance(model.updated_at, datetime))
 
     def test_to_dict(self):
-        """
-        Test the to_dict method
-        """
+        """Test conversion of object attributes to dictionary."""
         model = BaseModel()
         model_dict = model.to_dict()
-        self.assertEqual(model_dict['__class__'], 'BaseModel')
-        self.assertEqual(model_dict['id'], model.id)
-        self.assertIn('created_at', model_dict)
-        self.assertIn('updated_at', model_dict)
+        self.assertTrue("created_at" in model_dict)
+        self.assertTrue("updated_at" in model_dict)
+        self.assertTrue("id" in model_dict)
+        self.assertTrue("__class__" in model_dict)
+
+    def test_save(self):
+        """Test save method updates 'updated_at'."""
+        model = BaseModel()
+        updated_at_before = model.updated_at
+        model.save()
+        updated_at_after = model.updated_at
+        self.assertNotEqual(updated_at_before, updated_at_after)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()
+

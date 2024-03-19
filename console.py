@@ -2,6 +2,7 @@
 
 import cmd
 import re
+import sys
 from models import storage
 from models.base_model import BaseModel
 from models.user import User

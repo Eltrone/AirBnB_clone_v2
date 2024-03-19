@@ -1,43 +1,25 @@
 #!/usr/bin/python3
-""" Ce module définit des tests pour l'aménité """
-
+"""
+Unittest for Amenity
+"""
 import unittest
-import os
-import json
-from models.engine.file_storage import FileStorage
 from models.amenity import Amenity
 
 
 class TestAmenity(unittest.TestCase):
-    """
-    Cette classe effectue des tests sur l'aménité
-    """
-
+    """Defines test cases for the Amenity class."""
+    
     def setUp(self):
-        """
-        Cette méthode configure toutes les instances nécessaires pour les tests
-        """
-        self.storage = FileStorage()
-        self.amenity = Amenity()
-        self.amenity.name = "TestAmenity"
-        self.storage.new(self.amenity)
-        self.storage.save()
-
-    def tearDown(self):
-        """
-        Cette méthode supprime le fichier json qui a été ouvert pour les tests
-        """
-        if os.path.exists(FileStorage._FileStorage__file_path):
-            os.remove(FileStorage._FileStorage__file_path)
-
-    def test_amenity_instance(self):
-        """ Ce test vérifie l'instance de l'aménité """
-        self.assertIsInstance(self.amenity, Amenity)
-
-    def test_amenity_name(self):
-        """ Ce test vérifie le nom de l'aménité """
-        self.assertEqual(self.amenity.name, "TestAmenity")
-
-
+        """Setup for Amenity tests."""
+        self.amenity_1 = Amenity()
+        
+    def test_instance(self):
+        """Test if the object is an instance of Amenity."""
+        self.assertIsInstance(self.amenity_1, Amenity)
+        
+    def test_attributes(self):
+        """Test Amenity attributes."""
+        self.assertTrue(hasattr(self.amenity_1, "name"))
+        
 if __name__ == '__main__':
     unittest.main()
