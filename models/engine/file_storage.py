@@ -2,6 +2,7 @@
 """file serialization-deserialization"""
 
 import json
+from datetime import datetime
 from models.base_model import BaseModel
 from models.user import User
 from models.place import Place
@@ -32,12 +33,26 @@ class FileStorage:
         key = obj.__class__.__name__ + '.' + obj.id
         FileStorage.__objects[key] = obj
 
+    def _serialize_obj(self, obj):
+        """Convertit récursivement les objets en un format sérialisable par JSON."""
+        if isinstance(obj, dict):
+            return {k: self._serialize_obj(v) for k, v in obj.items()}
+        elif hasattr(obj, "__dict__"):
+            obj_dict = obj.__dict__.copy()
+            obj_dict.pop('_sa_instance_state', None)
+            for key, value in obj_dict.items():
+                obj_dict[key] = self._serialize_obj(value)
+            return obj_dict
+        elif isinstance(obj, list):
+            return [self._serialize_obj(item) for item in obj]
+        elif isinstance(obj, datetime):
+            return obj.isoformat()
+        return obj
+
     def save(self):
         """Serializes __objects to the JSON file (path: __file_path)."""
-        obj_dict = {}
-        with open(self.__file_path, 'w', encoding="utf-8") as f:
-            for k, v in FileStorage.__objects.items():
-                obj_dict[k] = v.to_dict()
+        obj_dict = {obj_id: self._serialize_obj(obj) for obj_id, obj in FileStorage.__objects.items()}
+        with open(FileStorage.__file_path, 'w') as f:
             json.dump(obj_dict, f)
 
     def reload(self):
@@ -51,6 +66,8 @@ class FileStorage:
                     FileStorage.__objects[obj_id] = cls(**obj_attrs)
         except FileNotFoundError:
             pass
+        except json.decoder.JSONDecodeError:
+            print("Warning: file.json is empty or corrupt, starting with empty storage.")
 
     def delete(self, obj=None):
         """Deletes obj from __objects if it's inside."""
