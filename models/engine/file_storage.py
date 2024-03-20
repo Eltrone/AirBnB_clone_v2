@@ -31,10 +31,10 @@ class FileStorage:
     def new(self, obj):
         """Sets in __objects the obj with key <obj class name>.id."""
         key = obj.__class__.__name__ + '.' + obj.id
-        FileStorage.__objects[key] = obj
+        self.__objects[key] = obj
 
     def _serialize_obj(self, obj):
-        """Convertit récursivement les objets en un format sérialisable par JSON."""
+        """Converts recursively objects into a JSON serializable format."""
         if isinstance(obj, dict):
             return {k: self._serialize_obj(v) for k, v in obj.items()}
         elif hasattr(obj, "__dict__"):
@@ -51,8 +51,8 @@ class FileStorage:
 
     def save(self):
         """Serializes __objects to the JSON file (path: __file_path)."""
-        obj_dict = {obj_id: self._serialize_obj(obj) for obj_id, obj in FileStorage.__objects.items()}
-        with open(FileStorage.__file_path, 'w') as f:
+        obj_dict = {obj_id: self._serialize_obj(obj) for obj_id, obj in self.__objects.items()}
+        with open(self.__file_path, 'w') as f:
             json.dump(obj_dict, f)
 
     def reload(self):
@@ -63,7 +63,7 @@ class FileStorage:
                 for obj_id, obj_attrs in obj_dict.items():
                     cls_name = obj_attrs["__class__"]
                     cls = eval(cls_name)
-                    FileStorage.__objects[obj_id] = cls(**obj_attrs)
+                    self.__objects[obj_id] = cls(**obj_attrs)
         except FileNotFoundError:
             pass
         except json.decoder.JSONDecodeError:
@@ -74,5 +74,5 @@ class FileStorage:
         if obj is None:
             return
         key = obj.__class__.__name__ + '.' + obj.id
-        if key in FileStorage.__objects:
-            del FileStorage.__objects[key]
+        if key in self.__objects:
+            del self.__objects[key]
