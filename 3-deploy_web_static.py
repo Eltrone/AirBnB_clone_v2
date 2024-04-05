@@ -9,6 +9,7 @@ import os
 
 env.hosts = ["34.224.62.139", "100.25.119.231"]
 
+
 def do_pack():
     """Generates a .tgz archive from the contents of the web_static folder."""
     try:
@@ -19,6 +20,7 @@ def do_pack():
         return archive_path
     except Exception as e:
         return None
+
 
 def do_deploy(archive_path):
     """Distributes an archive to web servers"""
@@ -40,6 +42,7 @@ def do_deploy(archive_path):
         return True
     except Exception as e:
         return False
+
 
 def deploy():
     """Creates and distributes an archive to web servers"""
