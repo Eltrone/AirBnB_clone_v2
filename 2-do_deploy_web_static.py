@@ -1,39 +1,34 @@
 #!/usr/bin/python3
-"""Un module pour distribuer une archive aux serveurs et la déployer"""
-from fabric.api import put, run, env
-import os
+"""
+Distribue une archive à vos serveurs web
+"""
 
-env.hosts = ['52.23.177.252', '18.204.7.7']
-env.user = "ubuntu"
+from fabric.api import env, put, run
+import os.path
+
+env.user = 'ubuntu'
+env.hosts = ["34.224.62.139", "100.25.119.231"]  # Mise à jour des adresses IP
+env.key_filename = "~/.ssh/id_rsa"
+
 
 def do_deploy(archive_path):
-    """Fonction pour déployer l'archive"""
+    """
+    Déploie l'archive sur les serveurs
+    """
     if not os.path.exists(archive_path):
         return False
-    
     try:
-        aname = os.path.basename(archive_path)
-        rname = aname.split(".")[0]
-        
-        # Transférer l'archive vers le dossier /tmp/ du serveur
-        put(archive_path, "/tmp/")
-        
-        # Décompresser l'archive dans /data/web_static/releases/
-        run(f"mkdir -p /data/web_static/releases/{rname}")
-        run(f"tar -xzf /tmp/{aname} -C /data/web_static/releases/{rname}/")
-        
-        # Supprimer l'archive du serveur
-        run(f"rm /tmp/{aname}")
-        
-        # Supprimer le lien symbolique actuel et en créer un nouveau
-        run("rm -rf /data/web_static/current")
-        run(f"ln -s /data/web_static/releases/{rname}/ /data/web_static/current")
-        
-        # Nettoyage: déplacer les fichiers de web_static vers le dossier parent et supprimer web_static
-        run(f"mv /data/web_static/current/web_static/* /data/web_static/current/")
-        run("rm -rf /data/web_static/current/web_static")
-        
-        print("New version deployed!")
+        arc = archive_path.split("/")
+        base = arc[1].strip('.tgz')
+        put(archive_path, '/tmp/')
+        run('mkdir -p /data/web_static/releases/{}'.format(base))
+        main = "/data/web_static/releases/{}".format(base)
+        run('tar -xzf /tmp/{} -C {}/'.format(arc[1], main))
+        run('rm /tmp/{}'.format(arc[1]))
+        run('mv {}/web_static/* {}/'.format(main, main))
+        run('rm -rf /data/web_static/current')
+        run('ln -s {}/ "/data/web_static/current"'.format(main))
         return True
+
     except:
         return False
