@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Fabric script that creates and distributes an archive to web servers
+Empaqueter le contenu statique et le déployer sur le serveur.
 """
 
 from fabric.api import local, put, run, env
@@ -11,7 +11,7 @@ env.hosts = ["34.224.62.139", "100.25.119.231"]
 
 
 def do_pack():
-    """Generates a .tgz archive from the contents of the web_static folder."""
+    """Empaqueter le contenu statique et le déployer sur le serveur."""
     try:
         now = datetime.now().strftime("%Y%m%d%H%M%S")
         local("mkdir -p versions")
@@ -23,7 +23,7 @@ def do_pack():
 
 
 def do_deploy(archive_path):
-    """Distributes an archive to web servers"""
+    """Distribue une archive aux serveurs web."""
     if not os.path.exists(archive_path):
         return False
     try:
@@ -45,7 +45,7 @@ def do_deploy(archive_path):
 
 
 def deploy():
-    """Creates and distributes an archive to web servers"""
+    """Crée et distribue une archive aux serveurs web."""
     archive_path = do_pack()
     if archive_path is None:
         return False
