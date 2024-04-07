@@ -7,7 +7,7 @@ from fabric.api import env, put, run
 import os.path
 
 env.user = 'ubuntu'
-env.hosts = ["34.224.62.139", "100.25.119.231"]  # Mise à jour des adresses IP
+env.hosts = ["34.224.62.139", "100.25.119.231"]
 env.key_filename = "~/.ssh/id_rsa"
 
 
