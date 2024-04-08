@@ -5,7 +5,7 @@ Nettoie les archives obsolètes localement et sur les serveurs.
 
 from fabric.api import *
 
-env.hosts = ['IP_web-01', 'IP_web-02']  # Définir les serveurs cibles
+env.hosts = ["34.224.62.139", "100.25.119.231"] 
 env.user = "ubuntu"  # Utilisateur pour les connexions SSH
 
 
