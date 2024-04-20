@@ -10,14 +10,20 @@ from models import storage_type  # Supposons que vous avez défini cela quelque 
 class State(BaseModel, Base):
     __tablename__ = 'states'
     name = Column(String(128), nullable=False)
+    cities = relationship("City", cascade='all, delete, delete-orphan',
+                          backref="state")
 
-    if storage_type == 'db':
-        cities = relationship("City", backref="state", cascade="all, delete")
-    else:
-        @property
-        def cities(self):
-            """Return the list of City objects from storage linked to the current State."""
-            from models import storage
-            from models.city import City
-            all_cities = storage.all(City)
-            return [city for city in all_cities.values() if city.state_id == self.id]
+    @property
+    def cities(self):
+        var = models.storage.all()
+        lista = []
+        result = []
+        for key in var:
+            city = key.replace('.', ' ')
+            city = shlex.split(city)
+            if (city[0] == 'City'):
+                lista.append(var[key])
+        for elem in lista:
+            if (elem.state_id == self.id):
+                result.append(elem)
+        return (result)
