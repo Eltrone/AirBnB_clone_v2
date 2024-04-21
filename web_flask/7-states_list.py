@@ -5,14 +5,10 @@ from models import storage
 
 app = Flask(__name__)
 
-
 @app.route('/states_list', methods=['GET'], strict_slashes=False)
 def states_list():
     states = storage.all("State")
-    if states:
-        sorted_states = sorted(states.values(), key=lambda state: state.name)
-    else:
-        sorted_states = []
+    sorted_states = sorted(all_states, key=lambda state: state.name)
     return render_template('7-states_list.html', states=sorted_states)
 
 
