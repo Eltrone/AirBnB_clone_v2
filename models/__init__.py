@@ -4,6 +4,8 @@ Creates a unique FileStorage instance.
 """
 
 from os import getenv
+from .base_model import BaseModel, Base
+from .engine.db_storage import DBStorage
 
 if getenv('HBNB_TYPE_STORAGE') == 'db':
     from models.engine.db_storage import DBStorage

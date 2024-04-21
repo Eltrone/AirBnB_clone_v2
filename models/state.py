@@ -1,14 +1,14 @@
 #!/usr/bin/python3
-""" Module for State class """
-
-from os import getenv
-from models.base_model import Base, BaseModel
-from sqlalchemy import Column, String
+from models.base_model import BaseModel, Base
 from sqlalchemy.orm import relationship
-from models import storage_type  # Supposons que vous avez défini cela quelque part dans le module de configuration
+from sqlalchemy import Column,  String
+import models
+import shlex
+
 
 class State(BaseModel, Base):
-    __tablename__ = 'states'
+    """State Class"""
+    __tablename__ = "states"
     name = Column(String(128), nullable=False)
     cities = relationship("City", cascade='all, delete, delete-orphan',
                           backref="state")

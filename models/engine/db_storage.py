@@ -1,48 +1,56 @@
 #!/usr/bin/python3
-
 from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
-from models.base_model import Base
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy import create_engine, MetaData, Table
+from os import getenv
+from models import BaseModel, Base
 from models.state import State
 from models.city import City
 from models.user import User
 from models.place import Place
 from models.review import Review
 from models.amenity import Amenity
-
+from models.base_model import BaseModel, Base
 
 class DBStorage:
     __engine = None
     __session = None
 
     def __init__(self):
-        from os import getenv
-        user = getenv('HBNB_MYSQL_USER')
-        pwd = getenv('HBNB_MYSQL_PWD')
-        host = getenv('HBNB_MYSQL_HOST')
-        db = getenv('HBNB_MYSQL_DB')
-        self.__engine = create_engine(
-            f'mysql+mysqldb://{user}:{pwd}@{host}/{db}', pool_pre_ping=True)
-        if getenv('HBNB_ENV') == 'test':
+        user = getenv("HBNB_MYSQL_USER")
+        passwd = getenv("HBNB_MYSQL_PWD")
+        db = getenv("HBNB_MYSQL_DB")
+        host = getenv("HBNB_MYSQL_HOST")
+        env = getenv("HBNB_ENV")
+
+
+
+        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
+                                      .format(user, passwd, host, db),
+                                      pool_pre_ping=True)
+
+        if env == "test":
             Base.metadata.drop_all(self.__engine)
+        DBStorage.storage = self
 
     def all(self, cls=None):
-        """Query current database session 
-        all objects depending on the class name (argument cls)."""
-        all_objs = {}
-        if cls is None:
-            classes = [State, City, User] # Ajoutez ou modifiez cette liste selon vos classes
-            for cls in classes:
-                objs = self.__session.query(cls).all()
-                for obj in objs:
-                    key = f"{obj.__class__.__name__}.{obj.id}"
-                    all_objs[key] = obj
+        dic = {}
+        if cls:
+            if type(cls) is str:
+                cls = eval(cls)
+            query = self.__session.query(cls)
+            for elem in query:
+                key = "{}.{}".format(type(elem).__name__, elem.id)
+                dic[key] = elem
         else:
-            objs = self.__session.query(cls).all()
-            for obj in objs:
-                key = f"{cls.__name__}.{obj.id}"
-                all_objs[key] = obj
-        return all_objs
+            lista = [State, City, User, Place, Review, Amenity]
+            for clase in lista:
+                query = self.__session.query(clase)
+                for elem in query:
+                    key = "{}.{}".format(type(elem).__name__, elem.id)
+                    dic[key] = elem
+        return dic
 
     def new(self, obj):
         self.__session.add(obj)
@@ -56,11 +64,9 @@ class DBStorage:
 
     def reload(self):
         Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(
-            bind=self.__engine, expire_on_commit=False)
-        Session = scoped_session(session_factory)
+        sec = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        Session = scoped_session(sec)
         self.__session = Session()
 
     def close(self):
-        """Closes the current SQLAlchemy session."""
-        self.__session.close()
+        self.__session.remove()
